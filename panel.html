@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Downloader</title>
+    <style>
+        body { font-family: sans-serif; padding: 10px; }
+        #status { margin-bottom: 10px; font-weight: bold; }
+        textarea { width: 95%; height: 80px; margin-bottom: 10px; }
+        button { width: 100%; padding: 10px; font-size: 15px; }
+        #log-container {
+            margin-top: 15px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 5px;
+            font-family: monospace;
+            font-size: 11px;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h3>Moodle Videos Downloader</h3>
+    <div id="status">Scanne nach Video-Stream...</div>
+    <textarea id="urlTemplateInput" placeholder="URL-Vorlage wird automatisch erkannt..."></textarea>
+    <button id="downloadBtn" disabled>Warte auf Stream...</button>
+    <div id="log-container"></div>
+    <script src="panel.js"></script>
+</body>
+</html>
