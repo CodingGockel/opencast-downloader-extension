@@ -60,7 +60,7 @@ downloadBtn.addEventListener('click', () => {
 async function startDownload(urlTemplate) {
     let writableStream;
     try {
-        log("Öffne 'Speichern unter...'-Dialog...");
+        log("Öffne 'Speichern unter...'");
         const fileHandle = await self.showSaveFilePicker({
             suggestedName: 'video.ts',
             types: [{ description: 'MPEG Transport Stream', accept: { 'video/mp2t': ['.ts'] } }],
@@ -102,7 +102,7 @@ async function startDownload(urlTemplate) {
                     await writer.write(buffer.data);
                     const currentTotalSeconds = (buffer.num + 1) * SEGMENT_DURATION_SECONDS;
                     const formattedTime = formatTime(currentTotalSeconds);
-                    log(`${formattedTime}`);
+                    log(`Current minutes downloaded: ${formattedTime}`);
                 }
 
                 if (endOfStream) {

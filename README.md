@@ -1,60 +1,65 @@
-# Moodle Open-Cast Video Downloader
+[English](./README.md) | [Deutsch](./README.de.md)
 
-Dies ist eine einfache Chrome-Extension, die entwickelt wurde, um Open-Cast Video-Streams (Vorlesungen und Folien) von von Moodle herunterzuladen.
+---
 
-Die Extension erkennt den Video-Stream in Moodle automatisch und bietet eine einfache Oberfläche im Side Panel des Browsers, um den Download zu starten.
+# Moodle Opencast Video Downloader
+
+This is a simple Chrome extension developed to download Opencast video streams (lectures and slides) from Moodle.
+
+The extension automatically detects the video stream in Moodle and provides a simple interface in the browser's side panel to start the download.
 
 ## ✨ Features
 
-*   **Automatische Erkennung:** Erkennt automatisch die URL-Vorlage des Video-Streams, sobald das Video abgespielt wird.
-*   **Live-Fortschrittsanzeige:** Zeigt ein detailliertes Log mit dem Fortschritt des Downloads an.
-*   **Manuelle Anpassung:** Ermöglicht das manuelle Bearbeiten der erkannten URL, um z.B. den Folien-Stream anstelle der Videoaufnahme herunterzuladen.
+*   **Automatic Detection:** Automatically detects the video stream's URL template as soon as the video starts playing.
+*   **Live Progress Display:** Displays a detailed log with the download's progress.
+*   **Manual Adjustment:** Allows for manual editing of the detected URL, e.g., to download the slides stream instead of the video recording.
 
 ---
 
-## ⚙️ Installation (Schritt-für-Schritt)
+## ⚙️ Installation (Step-by-Step)
 
-Da diese Extension nicht im offiziellen Chrome Web Store ist, muss sie manuell im Entwicklermodus geladen werden.
+Since this extension is not in the official Chrome Web Store, it must be loaded manually in developer mode.
 
-1.  **Projektordner herunterladen:** Stelle sicher, dass du den gesamten Projektordner auf deinem Computer gespeichert hast.
-2.  **Chrome öffnen:** Starte Google Chrome und navigiere zur Seite `chrome://extensions`.
-3.  **Entwicklermodus aktivieren:** Aktiviere oben rechts den Schalter für den **"Entwicklermodus"**.
-4.  **Extension laden:** Es erscheinen neue Buttons. Klicke auf **"Entpackte Erweiterung laden"**.
-5.  **Ordner auswählen:** Es öffnet sich ein Datei-Dialog. Wähle den **kompletten Projektordner** aus (nicht eine einzelne Datei darin).
-6.  **Fertig!** Die Extension ist nun installiert und in deiner Extension-Liste sichtbar. Ihr Icon erscheint in der Toolbar.
+1.  **Download the project folder:** Make sure you have saved the entire project folder to your computer.
+2.  **Open Chrome:** Start Google Chrome and navigate to the page `chrome://extensions`.
+3.  **Enable Developer Mode:** In the top right corner, enable the switch for **"Developer mode"**.
+4.  **Load the extension:** New buttons will appear. Click on **"Load unpacked"**.
+5.  **Select the folder:** A file dialog will open. Select the **entire project folder** (not an individual file within it).
+6.  **Done!** The extension is now installed and visible in your extension list. Its icon will appear in your toolbar.
 
 ---
 
-## 🚀 Verwendung
+## 🚀 Usage
 
-### 1. Standard-Download (Dozenten-Video)
+### 1. Standard Download (Lecturer Video)
 
-1.  Navigiere in Moodle zu der Aufzeichnung, welche du herunterladen willst.
-2.  Öffne das Side Panel der Extension, indem du auf das Extension-Icon in deiner Chrome-Toolbar klickst. Im Panel steht zunächst "Scanne nach Video-Stream...".
-3.  Drücke auf der Webseite auf **"Play"**, um das Video zu starten.
-4.  **Warte einen Moment.** Die Extension erkennt den Stream automatisch. Der Status im Side Panel ändert sich zu "Video-Stream erkannt!", und die URL-Vorlage wird in das Textfeld eingefügt.
-5.  Klicke auf den nun aktiven Button **"Download starten"**.
-6.  Wähle einen Speicherort auf deinem Computer. Der Download beginnt und du kannst den Fortschritt live im Log-Fenster mitverfolgen.
+1.  Navigate to the recording you want to download in Moodle.
+2.  Open the extension's side panel by clicking on the extension icon in your Chrome toolbar. The panel will initially state "Scanning for video stream...".
+3.  Press **"Play"** on the webpage to start the video.
+4.  **Wait a moment.** The extension will automatically detect the stream. The status in the side panel will change to "Video stream detected!", and the URL template will be inserted into the text field.
+5.  Click the now-active **"Start Download"** button.
+6.  Choose a save location on your computer. The download will begin and you can watch the progress live in the log window.
 
-> **Wichtiger Hinweis:** Das Side Panel muss während des gesamten Download-Vorgangs geöffnet bleiben! Wenn du es schließt, wird der Download abgebrochen.
+> **Important Note:** The side panel must remain open during the entire download process! If you close it, the download will be aborted.
 
-### 2. Mehrere Videos nacheinander herunterladen
+### 2. Downloading Multiple Videos in Succession
 
-Um sicherzustellen, dass die URL für das nächste Video korrekt erkannt wird, muss der Zustand der Extension zurückgesetzt werden.
+To ensure that the URL for the next video is detected correctly, the extension's state must be reset.
 
-1.  Schließe nach einem erfolgreichen Download das **Side Panel** der Extension.
-2.  Navigiere zur Seite des nächsten Videos.
-3.  Öffne das Side Panel **erneut** und wiederhole die Schritte aus dem Standard-Download.
+1.  After a successful download, close the extension's **side panel**.
+2.  Navigate to the page of the next video.
+3.  Open the side panel **again** and repeat the steps from the standard download.
 
-### 3. Nur die Folien herunterladen (Präsentations-Ansicht)
+### 3. Downloading Slides Only (Presentation View)
 
-Manchmal gibt es neben dem Video des Dozenten auch einen separaten Stream für die gezeigten Folien.
+Sometimes, in addition to the lecturer's video, there is a separate stream for the slides being shown.
 
-1.  Folge den Schritten des Standard-Downloads, bis die URL im Textfeld der Extension erscheint.
-2.  **Drücke noch nicht auf "Download starten"!**
-3.  Klicke in das Textfeld und bearbeite die URL manuell: Ersetze das Wort `presenter` durch `presentation`.
-    *   **Beispiel:**
+1.  Follow the steps for the standard download until the URL appears in the extension's text field.
+2.  **Do not press "Start Download" yet!**
+3.  Click into the text field and edit the URL manually: Replace the word `presenter` with `presentation`.
+    *   **Example:**
         `..._presenter.smil/...`
-        wird zu
+        becomes
         `..._presentation.smil/...`
-4.  Klicke erst **jetzt** auf "Download starten".
+4.  Click "Start Download" **now**.
+
