@@ -2,7 +2,7 @@
 
 ---
 
-# Moodle Open-Cast Video Downloader
+# Moodle OpenCast Video Downloader
 
 Dies ist eine einfache Chrome-Extension, die entwickelt wurde, um Open-Cast Video-Streams (Vorlesungen und Folien) von von Moodle herunterzuladen.
 
