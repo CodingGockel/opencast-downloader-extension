@@ -4,8 +4,9 @@ const downloadBtn = document.getElementById('downloadBtn');
 const logContainer = document.getElementById('log-container');
 let detectedUrlTemplate = null;
 
-const BATCH_SIZE = 25; 
+const CONCURRENCY = 25;
 const SEGMENT_DURATION_SECONDS = 8;
+const CONCURRENT_LIMIT = 6
 
 function formatTime(totalSeconds) {
     if (isNaN(totalSeconds) || totalSeconds < 0) {
@@ -56,7 +57,130 @@ downloadBtn.addEventListener('click', () => {
     startDownload(detectedUrlTemplate);
 });
 
+async function findTotalSegmentsFast(urlTemplate) {
+    log("Ermittle Segment-Anzahl...");
+    
+    async function segmentExists(index) {
+        const url = urlTemplate.replace('{}', index);
+        try {
+            const res = await fetch(url, { method: 'HEAD' });
+            return res.ok;
+        } catch {
+            return false;
+        }
+    }
 
+    // Parallel mehrere Punkte checken für schnellere obere Grenze
+    const checkPoints = [100, 500, 1000, 2000, 5000];
+    const results = await Promise.all(checkPoints.map(segmentExists));
+    
+    let upper = checkPoints[results.lastIndexOf(true) + 1] || checkPoints[0];
+    let lower = checkPoints[results.lastIndexOf(true)] || 0;
+    
+    // Falls alle existieren, weiter suchen
+    if (results.every(Boolean)) {
+        upper = 10000;
+        while (await segmentExists(upper)) upper *= 2;
+        lower = 5000;
+    }
+    
+    // Binary Search
+    while (lower < upper) {
+        const mid = Math.floor((lower + upper) / 2);
+        if (await segmentExists(mid)) {
+            lower = mid + 1;
+        } else {
+            upper = mid;
+        }
+    }
+
+    log(`Gefunden: ${lower} Segmente`);
+    return lower;
+}
+async function startDownload(urlTemplate) {
+
+    const totalSegments = await findTotalSegmentsFast(urlTemplate);
+
+    try {
+        const fileHandle = await self.showSaveFilePicker({
+            suggestedName: 'video.ts',
+            types: [{ description: 'MPEG Transport Stream', accept: { 'video/mp2t': ['.ts'] } }],
+        });
+
+        const writableStream = await fileHandle.createWritable();
+        log(`Starte Download von ${totalSegments} Segmenten mit ${CONCURRENCY} parallelen Downloads...`);
+
+        const results = new Map();
+        let nextWrite = 0;
+        let downloadedCount = 0;
+        
+        // --- OPTIMIERUNG 1: Einen einfachen Zähler statt eines Arrays verwenden ---
+        // Dies ist eine O(1) Operation und extrem schnell, egal wie viele Segmente es gibt.
+        let nextSegmentToFetch = 0;
+
+        // Schreibt Segmente in der richtigen Reihenfolge in die Datei
+        async function processWriteQueue() {
+            while (results.has(nextWrite)) {
+                const data = results.get(nextWrite);
+                await writableStream.write(data);
+                results.delete(nextWrite);
+                
+                downloadedCount++;
+                
+                // --- OPTIMIERUNG 2: Fortschritt seltener aktualisieren ---
+                // Loggt nur alle 100 Segmente oder am Ende, um UI-Updates zu reduzieren.
+                if (downloadedCount % 100 === 0 || downloadedCount === totalSegments) {
+                    log(`Fortschritt: ${downloadedCount} / ${totalSegments} Segmente geschrieben.`);
+                }
+                
+                nextWrite++;
+            }
+        }
+
+        // Ein "Worker" holt sich den nächsten Segment-Index, lädt ihn herunter und stößt das Schreiben an
+        async function worker() {
+            while (true) {
+                const segmentIndex = nextSegmentToFetch++; // Hol dir die nächste Indexnummer
+                if (segmentIndex >= totalSegments) {
+                    break; // Keine Segmente mehr übrig
+                }
+
+                try {
+                    const url = urlTemplate.replace('{}', segmentIndex);
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(`HTTP-Fehler ${res.status}`);
+                    
+                    const data = new Uint8Array(await res.arrayBuffer());
+                    results.set(segmentIndex, data);
+                    
+                    await processWriteQueue();
+
+                } catch (error) {
+                    log(`Fehler bei Segment ${segmentIndex}: ${error.message}. Das Segment wird übersprungen.`);
+                }
+            }
+        }
+
+        // Erstellen und Starten aller Worker
+        const workerPromises = Array.from({ length: CONCURRENCY }, () => worker());
+        await Promise.all(workerPromises);
+
+        // Sicherstellen, dass alle verbleibenden Segmente geschrieben werden
+        await processWriteQueue();
+
+        await writableStream.close();
+        log(`--- DOWNLOAD ERFOLGREICH (${downloadedCount}/${totalSegments} geschrieben) ---`);
+
+    } catch (error) {
+        if (error.name !== 'AbortError') log(`FEHLER: ${error.message}`);
+    } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = "Download starten";
+    }
+}
+
+//old
+/*
 async function startDownload(urlTemplate) {
     let writableStream;
     try {
@@ -132,3 +256,4 @@ async function startDownload(urlTemplate) {
         downloadBtn.textContent = "Download starten";
     }
 }
+*/
